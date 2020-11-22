@@ -172,6 +172,7 @@ void scanKeyboard() {
 // Scan through the key state array, compare to the saved state from last run, and
 // generate events. Some special cases are handled internally
 void checkForChanges() {
+  static boolean isSecond = false;
   for (unsigned int col = 0; col < NCOLS; col++) {
     for (unsigned int row = 0; row < NROWS; row++) {
       if (keydown[row][col] && !oldkeydown[row][col]) {
@@ -188,12 +189,13 @@ void checkForChanges() {
         // If SHIFT is held down and 40/80 is toggled, switch to the second keycode set
         if (isShift && row == 9 && col == 11) {
           keycode = keycode2;
-        } else {
+          isSecond = true;
+        } else if (keycode[row][col] != -1) {
           // Otherwise send the press event with this keycode
           Keyboard.press(keycode[row][col]);
         }
       } else if (!keydown[row][col] && oldkeydown[row][col]) {
-        // Key Uup event
+        // Key Up event
 
         // Keep track of SHIFT and CTRL state, for our own internal use
         if (keycode[row][col] == MODIFIERKEY_SHIFT || keycode[row][col] == MODIFIERKEY_RIGHT_SHIFT) {
@@ -204,9 +206,10 @@ void checkForChanges() {
         }
 
         // If 40/80 is released, switch to the first keycode set
-        if (row == 9 && col == 11) {
+        if (isSecond && row == 9 && col == 11) {
           keycode = keycode1;
-        } else {
+          isSecond = false;
+        } else if (keycode[row][col] != -1) {
           // Otherwise send the release event
           Keyboard.release(keycode[row][col]);
         }
