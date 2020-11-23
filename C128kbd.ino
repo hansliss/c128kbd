@@ -100,7 +100,7 @@ const int keycode2[NROWS][NCOLS] = {
 };
 
 // Keep track of the current keycode set. This is switchable, using Shift-40/80.
-int (*keycode)[12] = keycode1;
+const int (*keycode)[12] = keycode1;
 
 // Keep track of key state changes, in the easiest way possible
 uint8_t keydown[NROWS][NCOLS];
